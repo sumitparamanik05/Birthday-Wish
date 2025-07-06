@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Birthday Card</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #a18cd1, #fbc2eb);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    .card-wrapper {
+      width: 320px;
+      height: 220px;
+      perspective: 1200px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1s ease;
+      cursor: pointer;
+    }
+
+    .card.open {
+      transform: rotateY(180deg);
+    }
+
+    .card-side {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .front {
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      flex-direction: column;
+    }
+
+    .back {
+      background: #ffffff;
+      transform: rotateY(180deg);
+      flex-direction: column;
+      color: #333;
+    }
+
+    .back h2 {
+      margin: 10px 0 5px;
+      font-size: 20px;
+    }
+
+    .back p {
+      font-size: 14px;
+    }
+
+    .decor {
+      font-size: 30px;
+      margin-bottom: 5px;
+    }
+
+    .photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border: 2px solid #ff9a9e;
+    }
+
+    .tap-hint {
+      position: absolute;
+      bottom: 10px;
+      font-size: 12px;
+      color: #fff;
+      width: 100%;
+      text-align: center;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 99;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Confetti Canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Birthday Card -->
+<div class="card-wrapper">
+  <div class="card" onclick="flipCard(this)">
+    <div class="card-side front">
+      🎁 Tap to Open
+      <div class="tap-hint">(Click to open)</div>
+    </div>
+    <div class="card-side back">
+      <img src="Kuldeep.jpg" alt="Santosh" class="photo" />
+      <div class="decor">🎁🥳🎉</div>
+      <h2>Happy Birthday, Kuldip Bhai</h2>
+      <p>Wishing you a day full of happiness<br> and a year full of blessings!</p>
+    </div>
+  </div>
+</div>
+
+<!-- Background Music -->
+<audio id="birthday-music" loop>
+  <source src="kidsmobile.mp3" type="audio/mp3">
+</audio>
+
+<!-- Confetti & Flip Script -->
+<script>
+  const music = document.getElementById("birthday-music");
+
+  function flipCard(card) {
+    card.classList.toggle("open");
+    if (card.classList.contains("open")) {
+      music.play();
+      startConfetti();
+      setTimeout(stopConfetti, 5000);
+    }
+  }
+
+  // Confetti code (simple)
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confetti = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function startConfetti() {
+    confetti = Array.from({ length: 150 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 2,
+      d: Math.random() * 5 + 2,
+      color: `hsl(${Math.random() * 360}, 100%, 70%)`
+    }));
+
+    requestAnimationFrame(drawConfetti);
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      p.y += p.d;
+      if (p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+    if (confetti.length > 0) requestAnimationFrame(drawConfetti);
+  }
+
+  function stopConfetti() {
+    confetti = [];
+  }
+</script>
+
+</body>
+</html>
